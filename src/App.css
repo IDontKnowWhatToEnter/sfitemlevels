@@ -43,3 +43,11 @@
 .u-max-width {
   max-width: 300px;
 }
+
+.u-padding-right {
+  padding-right: 10%;
+}
+
+.u-width-half {
+  width: 50%;
+}

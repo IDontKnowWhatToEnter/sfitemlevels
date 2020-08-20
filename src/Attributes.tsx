@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {Divider, Form, Header, Icon, Radio} from 'semantic-ui-react';
-import useWitchRoles from './Hooks/UseWitchRoles';
+import React, {useState, useContext} from 'react';
+import {Divider, Form, Header, Radio, Tab} from 'semantic-ui-react';
+import ConfigContext from "./ConfigContext";
+import useCalculation from "./Hooks/UseCalculation";
+import useReverseCalculation from "./Hooks/UseReverseCalculation";
 
 type AvailableItemTypes = 'normal' | 'epic3' | 'epic5';
 
@@ -10,49 +12,35 @@ const typeMultipliers = {
   'epic5': 1
 }
 
+
+const usesTwoHandedWeapons = [
+    'daemonenjaeger',
+    'warriormage',
+    'magier',
+    'kundschafter',
+];
+
 export default function Attributes(): React.ReactElement {
+    const {
+        selectedClass
+    } = useContext(ConfigContext);
+    const seperateWeaponCalc = usesTwoHandedWeapons.includes(selectedClass);
+
     const [selectedType, setSelectedType] = useState<AvailableItemTypes>();
-    const [isSpecificWeaponType, setIsSpecificWeaponType] = useState(false);
-    const [auraLevel, setAuraLevel] = useState(1);
-    const {rolesCount, setRolesCount, witchMultiplier} = useWitchRoles();
     const [characterLevel, setCharacterLevel] = useState(0);
-    const [attributes, setAttributes] = useState(0);
+    const typeMultiplier = selectedType ? typeMultipliers[selectedType] : 0;
+    const attributes = useCalculation(characterLevel, typeMultiplier);
+    const attributeTwoHanded = useCalculation(characterLevel, typeMultiplier * 2);
 
-    const updateBasedOnLevel = useCallback(() => {
-        if(selectedType) {
-            let typeMultiplier = typeMultipliers[selectedType];
-            if(isSpecificWeaponType) {
-                typeMultiplier *= 2;
-            }
-            console.log(
-                'Update based on level: ',
-                `(${characterLevel} + 4 + ${auraLevel} * ${witchMultiplier}) * ${typeMultiplier}`
-            );
-            setAttributes((characterLevel + 4 + auraLevel * witchMultiplier) * typeMultiplier);
-        }
-    }, [selectedType, witchMultiplier, characterLevel, isSpecificWeaponType, auraLevel]);
 
-    const updateBasedOnAttributes = useCallback((attributes: number) => {
-        if(selectedType) {
-            let typeMultiplier = typeMultipliers[selectedType];
-            if(isSpecificWeaponType) {
-                typeMultiplier *= 2;
-            }
-            console.log(
-                'Update based on attribtues: ',
-                `${attributes} / ${typeMultiplier} - 4 - ${auraLevel} * ${witchMultiplier}`
-            );
-            setCharacterLevel(attributes / typeMultiplier - 4 - auraLevel * witchMultiplier);
-        }
-    }, [selectedType, witchMultiplier, isSpecificWeaponType, auraLevel]);
+    const [attributesInputArmor, setAttributesInputArmor] = useState(0);
+    const [attributesInputWeapon, setAttributesInputWeapon] = useState(0);
 
-    useEffect(() => {
-        updateBasedOnLevel();
-    }, [updateBasedOnLevel]);
-  
-  
-    return <>
-        <Header>Konfiguration</Header>
+    const characterLevelArmor = useReverseCalculation(attributesInputArmor, typeMultiplier);
+    const characterLevelWeapon = useReverseCalculation(attributesInputWeapon, typeMultiplier * 2);
+
+    return <Tab.Pane>
+        <Header color={'blue'}>Konfiguration</Header>
         <Form>
           <Form.Field>
             Item Typ:
@@ -90,72 +78,103 @@ export default function Attributes(): React.ReactElement {
               }}
             />
           </Form.Field>
-          <Form.Field>
-            <Form.Input
-              label='Aura Level'
-              type='number'
-              className={'u-max-width'}
-              value={'' + auraLevel}
-              min={1}
-              onChange={(e, {value}) => {
-                  setAuraLevel(parseInt(value, 10));
-              }}
-            />
-          </Form.Field>
-          <Form.Field>
-            <Form.Input
-              label='Hexen Rollen'
-              className={'u-max-width'}
-              type='number'
-              value={'' + rolesCount}
-              min={0}
-              onChange={(e, {value}) => {
-                  setRolesCount(parseInt(value, 10));
-              }}
-            />
-          </Form.Field>
-          <Form.Field>
-            <Form.Checkbox
-              label='Ist eine Zweihand Waffe'
-              checked={isSpecificWeaponType}
-              onChange={() => {
-                  setIsSpecificWeaponType(!isSpecificWeaponType);
-              }}
-            />
-          </Form.Field>
-            <Form.Input
-                className={'u-max-width'}
-                fluid
-                label='Charakter Level'
-                type='number'
-                value={'' + characterLevel}
-                min={0}
-                onChange={(e, {value}) => {
-                    const level = parseInt(value, 10);
-                    setCharacterLevel(level);
-                }}>
-            </Form.Input>
         </Form>
 
         <Divider/>
 
-        <Header>Ergebnis</Header>
+        <Header color={'blue'}>Level -> Attribute</Header>
 
-        <Form>
-            <Form.Input
-                className={'u-max-width'}
-                fluid
-                label='Attribute'
-                type='number'
-                value={'' + attributes}
-                min={0}
-                readOnly
-                onChange={(e, {value}) => {
-                    setAttributes(parseInt(value, 10));
-                    updateBasedOnAttributes(parseInt(value, 10));
-                }}>
-            </Form.Input>
-        </Form>
+        <div className={'u-flex-row'}>
+            <div className={'u-width-half u-padding-right'}>
+                <Form>
+                    <Form.Input
+                        className={'u-max-width'}
+                        fluid
+                        label='Charakter Level'
+                        type='number'
+                        value={'' + characterLevel}
+                        min={0}
+                        onChange={(e, {value}) => {
+                            const level = parseInt(value, 10);
+                            setCharacterLevel(level);
+                        }}>
+                    </Form.Input>
+                </Form>
+            </div>
 
-    </>;
+            <div className={'u-width-half'}>
+                {seperateWeaponCalc && <>
+                    <i>
+                        <b>Rüstung: {attributes}</b>
+                    </i>
+                    <br/>
+                    <i>
+                        <b>Waffe: {attributeTwoHanded}</b>
+                    </i>
+                </>
+                }
+                {!seperateWeaponCalc && <>
+                    <i>
+                        <b>Attribute: {attributes}</b>
+                    </i>
+                </>
+                }
+            </div>
+        </div>
+
+
+        <Header color={'blue'}>Attribute -> Level</Header>
+
+        <div className={'u-flex-row'}>
+            <div className={'u-width-half u-padding-right'}>
+                <Form>
+                    <Form.Input
+                        className={'u-max-width'}
+                        fluid
+                        label={seperateWeaponCalc ? 'Rüstung' : 'Attribute'}
+                        type='number'
+                        value={'' + attributesInputArmor}
+                        min={0}
+                        onChange={(e, {value}) => {
+                            setAttributesInputArmor(parseInt(value, 10));
+                        }}>
+                    </Form.Input>
+                </Form>
+            </div>
+
+            <div className={'u-width-half'}>
+                <i>
+                    <b>Level: {characterLevelArmor}</b>
+                </i>
+            </div>
+        </div>
+        {seperateWeaponCalc &&<>
+            <Divider hidden/>
+            <div className={'u-flex-row'}>
+                <div className={'u-width-half u-padding-right'}>
+                    <Form>
+                        <Form.Input
+                            className={'u-max-width'}
+                            fluid
+                            label={'Waffe'}
+                            type='number'
+                            value={'' + attributesInputWeapon}
+                            min={0}
+                            onChange={(e, {value}) => {
+                                setAttributesInputWeapon(parseInt(value, 10));
+                            }}>
+                        </Form.Input>
+                    </Form>
+                </div>
+
+                <div className={'u-width-half'}>
+                    <i>
+                        <b>Level: {characterLevelWeapon}</b>
+                    </i>
+                </div>
+            </div>
+        </>
+        }
+
+    </Tab.Pane>;
   }
