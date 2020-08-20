@@ -1,3 +1,45 @@
 .main {
   padding: 20px;
 }
+
+.centeredContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.u-flex-row {
+  display: flex;
+}
+
+.u-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.u-flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.u-text-center {
+  text-align: center;
+}
+
+.u-flex-full-size {
+  width: 100%;
+}
+
+.u-icon-width-big {
+  flex-shrink: 0;
+}
+
+.u-input-min-length {
+  min-width: 120px;
+}
+
+.u-max-width {
+  max-width: 300px;
+}

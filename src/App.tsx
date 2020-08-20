@@ -1,36 +1,25 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import './App.css';
 import 'semantic-ui-css/semantic.min.css'
-import {Header, Form, Radio, Tab} from 'semantic-ui-react'
+import {Header, Tab} from 'semantic-ui-react'
 import Attributes from './Attributes';
+import Damage from "./Damage";
 
-function Damage(): React.ReactElement {
-  return <Tab.Pane>Damage</Tab.Pane>;
-}
-function Armour(): React.ReactElement {
-  return <Tab.Pane>Armour</Tab.Pane>;
-}
-
-
-function App() {;
+function App() {
   const panes = useMemo(() => [
     {
-      menuItem: 'Attributes',
+      menuItem: 'Attribute',
       render: () => <Attributes/>
     },
     {
-      menuItem: 'Damage',
-      render: Damage
-    },
-    {
-      menuItem: 'Armour',
-      render: Armour
+      menuItem: 'Schaden',
+      render: () => <Damage/>
     },
   ], []);
   
   return <div className='main'>
-    <Header>Shakes and Fidget Item Level Calculator</Header>
-    <Tab panes={panes}/>
+    <Header>Shakes and Fidget Rechner</Header>
+    <Tab panes={panes} menu={{secondary: true, pointing: true}}/>
   </div>;
 }
 
