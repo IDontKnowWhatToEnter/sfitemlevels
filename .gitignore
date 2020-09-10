@@ -24,3 +24,4 @@ yarn-error.log*
 
 .idea
 sfitemlevels-*.tar
+upload.sh

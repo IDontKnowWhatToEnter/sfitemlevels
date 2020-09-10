@@ -6,6 +6,7 @@ import Attributes from './Attributes';
 import Damage from "./Damage";
 import CommonConfig from "./CommonConfig";
 import ConfigContext, {ConfigContextData} from "./ConfigContext";
+import useSaveStateData from "./Hooks/UseSaveStateData";
 
 function App() {
   const panes = useMemo(() => [
@@ -19,15 +20,13 @@ function App() {
     },
   ], []);
 
-  const [contextData, setContextData] = useState<ConfigContextData>({auraLevel: 1, rolesCount: 0, selectedClass: 'assassin'});
+  const {data, patch: patchSaveState} = useSaveStateData();
+
   
   return <div className='main'>
     <ConfigContext.Provider value={{
-      ...contextData,
-      patch: (data) => {setContextData({
-        ...contextData,
-        ...data
-      })}
+      ...data,
+      patch: (data) => {patchSaveState(data)}
     }}>
       <Header color={'blue'} as={'h1'}>Shakes and Fidget Rechner</Header>
 

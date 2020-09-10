@@ -7,6 +7,8 @@ services:
     ports:
       - "80:80"
     restart: always
+    depends_on:
+      - reactServer
   npm:
     image: library/node:14.10-alpine
     volumes:
