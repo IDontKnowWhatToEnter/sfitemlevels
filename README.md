@@ -21,7 +21,7 @@ Upload the file ```sfitemlevels-<versionNumber>.tar``` to the server.
 ```docker load --input sfitemlevels-<versionNumber>.tar```
 
 Stop current stack and start new one.
-```docker stop sfitemlevels && docker run --restart always --name sfitemlevels sfitemlevels:<versionNumber>```
+```docker stop sfitemlevels && docker run -p 80:80 --restart always --name sfitemlevels sfitemlevels:<versionNumber>```
 
 
 
