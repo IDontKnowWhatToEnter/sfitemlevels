@@ -1,0 +1,8 @@
+.commonConfig-characterDropdown {
+    width: 270px;
+}
+
+.commonConfig-characterDropdownEditIcon {
+    margin-top: 5px !important;
+    cursor: pointer;
+}

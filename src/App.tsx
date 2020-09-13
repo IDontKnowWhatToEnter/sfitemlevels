@@ -1,11 +1,11 @@
-import React, {useMemo, useState} from 'react';
+import React, {useMemo} from 'react';
 import './App.css';
 import 'semantic-ui-css/semantic.min.css'
 import {Divider, Header, Tab} from 'semantic-ui-react'
 import Attributes from './Attributes';
 import Damage from "./Damage";
 import CommonConfig from "./CommonConfig";
-import ConfigContext, {ConfigContextData} from "./ConfigContext";
+import ConfigContext from "./ConfigContext";
 import useSaveStateData from "./Hooks/UseSaveStateData";
 
 function App() {
