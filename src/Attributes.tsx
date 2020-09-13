@@ -4,7 +4,7 @@ import ConfigContext from "./ConfigContext";
 import useCalculation from "./Hooks/UseCalculation";
 import useReverseCalculation from "./Hooks/UseReverseCalculation";
 
-type AvailableItemTypes = 'normal' | 'epic3' | 'epic5';
+export type AvailableItemTypes = 'normal' | 'epic3' | 'epic5';
 
 const typeMultipliers = {
   'normal': 2,
@@ -22,13 +22,14 @@ const usesTwoHandedWeapons = [
 
 export default function Attributes(): React.ReactElement {
     const {
-        selectedClass
+        selectedClass,
+        characterLevel,
+        patch,
+        selectedItemType
     } = useContext(ConfigContext);
     const seperateWeaponCalc = usesTwoHandedWeapons.includes(selectedClass);
 
-    const [selectedType, setSelectedType] = useState<AvailableItemTypes>();
-    const [characterLevel, setCharacterLevel] = useState(0);
-    const typeMultiplier = selectedType ? typeMultipliers[selectedType] : 0;
+    const typeMultiplier = selectedItemType ? typeMultipliers[selectedItemType] : 0;
     const attributes = useCalculation(characterLevel, typeMultiplier);
     const attributeTwoHanded = useCalculation(characterLevel, typeMultiplier * 2);
 
@@ -50,9 +51,9 @@ export default function Attributes(): React.ReactElement {
               label='Normal'
               name='itemType'
               value='normal'
-              checked={selectedType === 'normal'}
+              checked={selectedItemType === 'normal'}
               onChange={(e, {value}) => {
-                  setSelectedType(value as AvailableItemTypes);
+                  patch({selectedItemType: value as AvailableItemTypes});
               }}
             />
           </Form.Field>
@@ -61,9 +62,9 @@ export default function Attributes(): React.ReactElement {
               label='Epic mit 3 Attributen'
               name='itemType'
               value='epic3'
-              checked={selectedType === 'epic3'}
+              checked={selectedItemType === 'epic3'}
               onChange={(e, {value}) => {
-                  setSelectedType(value as AvailableItemTypes);
+                  patch({selectedItemType: value as AvailableItemTypes});
               }}
             />
           </Form.Field>
@@ -72,9 +73,9 @@ export default function Attributes(): React.ReactElement {
               label='Epic mit 5 Attributen'
               name='itemType'
               value='epic5'
-              checked={selectedType === 'epic5'}
+              checked={selectedItemType === 'epic5'}
               onChange={(e, {value}) => {
-                  setSelectedType(value as AvailableItemTypes);
+                  patch({selectedItemType: value as AvailableItemTypes});
               }}
             />
           </Form.Field>
@@ -96,7 +97,7 @@ export default function Attributes(): React.ReactElement {
                         min={0}
                         onChange={(e, {value}) => {
                             const level = parseInt(value, 10);
-                            setCharacterLevel(level);
+                            patch({characterLevel: level});
                         }}>
                     </Form.Input>
                 </Form>

@@ -1,9 +1,13 @@
 import {classes} from "./Interfaces";
+import {AvailableItemTypes} from "./Attributes";
+import defaultsDeep from 'lodash/defaultsDeep';
 
 export interface SaveStateData {
     selectedClass: classes;
     auraLevel: number;
     rolesCount: number;
+    characterLevel: number;
+    selectedItemType: AvailableItemTypes;
 }
 
 export interface SaveState {
@@ -15,17 +19,25 @@ type SaveStates = SaveState[];
 let subscribers: Array<(newData: SaveState) => void> = [];
 
 const states = window.localStorage.getItem('saveStates');
-let parsedStates: SaveStates = [{
+
+
+const defaultState: SaveState = {
     name: 'default',
     data: {
         selectedClass: 'assassin',
         auraLevel: 0,
         rolesCount: 0,
+        characterLevel: 0,
+        selectedItemType: 'epic3'
     }
-}];
+};
+
+let parsedStates: SaveStates = [defaultState];
+let currentState = 0;
 
 if(states) {
     parsedStates = JSON.parse(states);
+    parsedStates.forEach((state) => defaultsDeep(state, defaultState));
 }
 
 export function getSaveStates(): SaveStates {
