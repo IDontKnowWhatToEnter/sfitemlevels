@@ -17,11 +17,12 @@ const multiplicators = {
 
 export default function Damage(): React.ReactElement {
     const {
-        selectedClass
+        selectedClass,
+        characterLevel,
+        patch
     } = useContext(ConfigContext);
 
     const multiplicator = multiplicators[selectedClass];
-    const [characterLevel, setCharacterLevel] = useState(0);
     const damageValue = useCalculation(characterLevel, multiplicator);
 
 
@@ -44,7 +45,7 @@ export default function Damage(): React.ReactElement {
                         min={0}
                         onChange={(e, {value}) => {
                             const level = parseInt(value, 10);
-                            setCharacterLevel(level);
+                            patch({characterLevel: level});
                         }}>
                     </Form.Input>
                 </Form>
